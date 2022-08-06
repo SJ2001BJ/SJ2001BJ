@@ -16,19 +16,24 @@
   </div>
   <audio ref="audio" :src="`https://music.163.com/song/media/outer/url?id=${playList[playListIndex].id}.mp3`"></audio>
   <van-popup v-model:show="detailShow" position="right" :style="{ width: '100%',height:'100%' }" >
-    内容
+    <MusicDetail :musicList="playList[playListIndex]" :play="play" :isbtnShow="isbtnShow"/>
   </van-popup>
 </div>
 </template>
 
 <script>
 import {mapMutations, mapState} from 'vuex'
+import MusicDetail from "@/components/item/MusicDetail";
 export default {
   computed:{
     ...mapState(['playList','playListIndex','isbtnShow','detailShow']),
   },
+  updated() {
+    this.$store.dispatch("getLyric",this.playList[this.playListIndex].id)
+  },
   mounted(){
     console.log(this.$refs);
+    this.$store.dispatch("getLyric",this.playList[this.playListIndex].id)
   },
   methods:{
     play:function(){
@@ -60,7 +65,7 @@ export default {
 
   },
   components:{
-    // MusicDetail
+    MusicDetail
   }
 };
 </script>

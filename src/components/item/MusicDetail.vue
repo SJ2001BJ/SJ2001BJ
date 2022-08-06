@@ -1,0 +1,261 @@
+<template>
+  <img :src="musicList.al.picUrl" alt="" class="bigImg">
+<div class="detailTop">
+  <div class="detailTopLeft">
+    <i class="bi bi-arrow-left" @click="updateDetailShow"></i>
+    <div class="leftMarquee">
+      <Vue3Marquee style="color:#ffffff;">
+        {{musicList.al.name}}
+      </Vue3Marquee>
+      <span v-for="item in musicList.ar" :key="item">
+        {{item.name}}
+      </span>
+      <i class="bi bi-chevron-compact-right"></i>
+    </div>
+  </div>
+
+  <div class="detailTopRight">
+    <i class="bi bi-share-fill"></i>
+  </div>
+</div>
+  <div class="detailContent" v-show="isLyricShow">
+    <img src="@/assets/needle-ab.png" alt="" class="img_needle" :class="{img_needle_active:!isbtnShow}"/>
+    <img src="@/assets/cd.png" alt="" class="img_cd">
+    <img :src="musicList.al.picUrl" alt="" class="img_ar" :class="{img_ar_active:!isbtnShow,img_ar_paused:isbtnShow}">
+  </div>
+  <div class="musicLyric">
+    <p v-for="item in lyric" :key="item">
+      {{item.lrc}}
+    </p>
+  </div>
+  <div class="detailFooter">
+    <div class="footerTop">
+      <i class="bi bi-hearts"></i>
+      <i class="bi bi-download"></i>
+      <i class="bi bi-vinyl-fill"></i>
+      <i class="bi bi-info-square"></i>
+      <i class="bi bi-music-note-list"></i>
+    </div>
+    <div class="footerContent">
+
+    </div>
+    <div class="footer">
+      <i class="bi bi-repeat"></i>
+      <i class="bi bi-arrow-left-circle"></i>
+      <i class="bi bi-play-circle-fill" v-if="isbtnShow" @click="play"></i>
+      <i class="bi bi-stop-circle-fill" v-else @click="play"></i>
+      <i class="bi bi-arrow-right-circle"></i>
+      <i class="bi bi-ladder"></i>
+    </div>
+  </div>
+</template>
+
+
+<script>
+import { Vue3Marquee } from 'vue3-marquee'
+import 'vue3-marquee/dist/style.css'
+import {mapMutations,mapState} from "vuex";
+
+export default {
+  data(){
+    return{
+     isLyricShow:false
+    }
+  },
+  computed:{
+    ...mapState(["lyricList"]),
+    lyric:function (){
+      let arr;
+      if(this.lyricList.lyric){
+        arr=this.lyricList.lyric.split(/[(\r\n)\r\n]+/).map((item,i)=>{
+          let min=item.slice(1,3);
+          let sec=item.slice(4,6);
+          let mill=item.slice(7,10);
+          let lrc=item.slice(11,item.length)
+
+          if(isNaN(Number(mill))){
+            mill=item.slice(7,9);
+            lrc=item.slice(10,item.length)
+          }
+          //console.log(min,sec,Number(mill),lrc);
+          return{min,sec,mill,lrc}
+        })
+      }
+
+      return arr
+    }
+  },
+  mounted(){
+    console.log(this.musicList);
+    console.log(this.lyricList.lyric);
+  },
+  props:['musicList','isbtnShow','play'],
+  methods:{
+    ...mapMutations(['updateDetailShow'])
+  },
+  components:{
+    Vue3Marquee
+  }
+}
+</script>
+
+<style lang="less" scoped>
+.bigImg{
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: -1;
+  filter:blur(80px);
+}
+  .detailTop{
+    width: 100%;
+    height: 1rem;
+    display: flex;
+    padding:0.2rem;
+    justify-content: space-between;
+    align-items: center;
+    fill: #ffffff;
+    .detailTopLeft{
+      display: flex;
+      align-items: center;
+      .leftMarquee{
+        width: 3rem;
+        height: 100%;
+        margin-left: 0.4rem;
+        span{
+          color:#999999;
+        }
+        .bi{
+          width: 0.3rem;
+          height: 0.3rem;
+          fill: #999999;
+        }
+      }
+    }
+  }
+  .detailContent {
+    width: 100%;
+    height: 9rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+
+    .img_needle {
+      width: 2rem;
+      height: 3rem;
+      position: absolute;
+      left: 46%;
+      transform-origin: 0 0;
+      transform: rotate(-13deg);
+      transition: all 2s;
+    }
+    .img_needle_active {
+      width: 2rem;
+      height: 3rem;
+      position: absolute;
+      left: 46%;
+      transform-origin: 0 0;
+      transform: rotate(0deg);
+      transition: all 2s;
+    }
+
+  }
+    .img_cd {
+      width: 5rem;
+      height: 5rem;
+      position: absolute;
+      bottom: 2.3rem;
+      z-index: -1;
+    }
+
+    .img_ar {
+      width: 3.2rem;
+      height: 3.2rem;
+      border-radius: 50%;
+      position: absolute;
+      bottom: 3.14rem;
+      animation: rotate_ar 10s linear infinite;
+    }
+    .img_ar_active{
+      animation-play-state: running;
+    }
+    .img_ar_paused{
+      animation-play-state: paused;
+    }
+    @keyframes rotate_ar {
+      0%{
+        transform: rotateZ(0deg);
+      }
+      100%{
+        transform: rotateZ(350deg);
+      }
+    }
+
+    .musicLyric{
+      width: 100%;
+      height: 9rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: .2rem;
+      overflow: scroll;
+      p{
+         color:rgb(190,181,181);
+         margin-bottom: 20px;
+      }
+    }
+    .detailFooter {
+      width: 100%;
+      height: 3rem;
+      position: relative;
+      bottom: 0.2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .footerTop {
+        width: 100%;
+        height: 1rem;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+
+        .bi {
+          width: 0.36rem;
+          height: 0.36rem;
+          fill: rgb(245, 234, 234);
+        }
+
+        .bi {
+          width: 0.6rem;
+          height: 0.6rem;
+        }
+      }
+
+      .range {
+        width: 100%;
+        height: 0.06rem;
+      }
+
+      .footer {
+        width: 100%;
+        height: 1rem;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+
+        .bi {
+          fill: rgb(245, 234, 234);
+        }
+
+        .bi-play-circle-fill {
+          width: -1.5rem;
+
+          align-items: center;
+        }
+      }
+    }
+
+
+</style>
