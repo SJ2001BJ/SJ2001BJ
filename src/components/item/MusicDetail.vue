@@ -2,7 +2,7 @@
   <img :src="musicList.al.picUrl" alt="" class="bigImg">
 <div class="detailTop">
   <div class="detailTopLeft">
-    <i class="bi bi-arrow-left" @click="updateDetailShow"></i>
+    <i class="bi bi-arrow-left" @click="backHome"></i>
     <div class="leftMarquee">
       <Vue3Marquee style="color:#ffffff;">
         {{musicList.al.name}}
@@ -18,13 +18,13 @@
     <i class="bi bi-share-fill"></i>
   </div>
 </div>
-  <div class="detailContent" v-show="isLyricShow">
+  <div class="detailContent" v-show="!isLyricShow">
     <img src="@/assets/needle-ab.png" alt="" class="img_needle" :class="{img_needle_active:!isbtnShow}"/>
     <img src="@/assets/cd.png" alt="" class="img_cd">
-    <img :src="musicList.al.picUrl" alt="" class="img_ar" :class="{img_ar_active:!isbtnShow,img_ar_paused:isbtnShow}">
+    <img :src="musicList.al.picUrl" alt="" class="img_ar" @click="isLyricShow=true" :class="{img_ar_active:!isbtnShow,img_ar_paused:isbtnShow}">
   </div>
-  <div class="musicLyric">
-    <p v-for="item in lyric" :key="item">
+  <div class="musicLyric" ref="musicLyric" v-show="isLyricShow">
+    <p v-for="item in lyric" :key="item" :class="{active:(currentTime*1000>=item.time && currentTime*1000<item.pre)}">
       {{item.lrc}}
     </p>
   </div>
@@ -41,10 +41,10 @@
     </div>
     <div class="footer">
       <i class="bi bi-repeat"></i>
-      <i class="bi bi-arrow-left-circle"></i>
+      <i class="bi bi-arrow-left-circle" @click="goPlay(-1)"></i>
       <i class="bi bi-play-circle-fill" v-if="isbtnShow" @click="play"></i>
       <i class="bi bi-stop-circle-fill" v-else @click="play"></i>
-      <i class="bi bi-arrow-right-circle"></i>
+      <i class="bi bi-arrow-right-circle" @click="goPlay(1)"></i>
       <i class="bi bi-ladder"></i>
     </div>
   </div>
@@ -60,10 +60,11 @@ export default {
   data(){
     return{
      isLyricShow:false
+
     }
   },
   computed:{
-    ...mapState(["lyricList"]),
+    ...mapState(["lyricList",'currentTime','playListIndex','playList']),
     lyric:function (){
       let arr;
       if(this.lyricList.lyric){
@@ -72,26 +73,57 @@ export default {
           let sec=item.slice(4,6);
           let mill=item.slice(7,10);
           let lrc=item.slice(11,item.length)
-
+          let time= parseInt(min)*60*1000+parseInt(sec)*1000+parseInt(mill);
           if(isNaN(Number(mill))){
             mill=item.slice(7,9);
             lrc=item.slice(10,item.length)
+            time= parseInt(min)*60*1000+parseInt(sec)*1000+parseInt(mill);
           }
           //console.log(min,sec,Number(mill),lrc);
-          return{min,sec,mill,lrc}
+          return{min,sec,mill,lrc,time}
         })
+        arr.forEach((item,i)=>{
+          if(i===arr.length-1){
+            item.pre=0
+          }else{
+            item.pre=arr[i+1].time
+          }
+        });
       }
-
+      console.log(arr);
       return arr
     }
   },
   mounted(){
-    console.log(this.musicList);
-    console.log(this.lyricList.lyric);
+    //console.log(this.musicList);
+    //console.log(this.lyricList.lyric);
   },
   props:['musicList','isbtnShow','play'],
   methods:{
-    ...mapMutations(['updateDetailShow'])
+    backHome:function(){
+      this.isLyricShow=false
+      this.updateDetailShow()
+    },
+    goPlay:function (num) {
+      let index=this.playListIndex+num
+      if(index<0){
+        index=this.playList.length-1
+      }else if(index==this.playList.length){
+         index=0
+      }
+      this.updatePlayListIndex(index)
+    },
+    ...mapMutations(['updateDetailShow','updatePlayListIndex'])
+  },
+  watch:{
+    currentTime:function(){
+      let p=document.querySelector("p.active")
+      console.log([p]);
+      if(p.offsetTop>300){
+         this.$refs.musicLyric.scollTop=p.offsetTop-300;
+      }
+      console.log([this.$refs.musicLyric])
+    }
   },
   components:{
     Vue3Marquee
@@ -194,7 +226,7 @@ export default {
 
     .musicLyric{
       width: 100%;
-      height: 9rem;
+      height: 8rem;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -202,13 +234,17 @@ export default {
       overflow: scroll;
       p{
          color:rgb(190,181,181);
-         margin-bottom: 20px;
+         margin-bottom: 15px;
+      }
+      .active{
+        color:#ffffff;
+        font-size: 30px;
       }
     }
     .detailFooter {
       width: 100%;
       height: 3rem;
-      position: relative;
+      position: absolute;
       bottom: 0.2rem;
       display: flex;
       flex-direction: column;

@@ -3,7 +3,7 @@
    <div class="footerLeft" @click="updateDetailShow">
      <img :src="playList[playListIndex].al.picUrl" alt=""/>
      <div>
-       <p>{{playList[playListIndex].al.name}}</p>
+       <p>{{playList[playListIndex].name}}</p>
        <span>
          横滑切换上下首哦
        </span>
@@ -25,6 +25,11 @@
 import {mapMutations, mapState} from 'vuex'
 import MusicDetail from "@/components/item/MusicDetail";
 export default {
+  data(){
+    return{
+      interVal:0
+    }
+  },
   computed:{
     ...mapState(['playList','playListIndex','isbtnShow','detailShow']),
   },
@@ -34,6 +39,7 @@ export default {
   mounted(){
     console.log(this.$refs);
     this.$store.dispatch("getLyric",this.playList[this.playListIndex].id)
+
   },
   methods:{
     play:function(){
@@ -41,13 +47,20 @@ export default {
       if(this.$refs.audio.paused){
         this.$refs.audio.play();
         this.updateIsbtnShow(false)
+        this.updateTime()//播放，调用函数进行传值
       }else{
         this.$refs.audio.pause()
         this.updateIsbtnShow(true)
+        clearInterval(this.interVal)//暂停清楚定时器
       }
 
     },
-    ...mapMutations(['updateIsbtnShow','updateDetailShow'])
+    updateTime:function (){
+      this.interval = setInterval(()=>{
+        this.updateCurrentTime(this.$refs.audio.currentTime)
+      },1000)
+    },
+    ...mapMutations(['updateIsbtnShow','updateDetailShow','updateCurrentTime'])
   },
   watch:{
     playListIndex:function(){//监听如果下标发生改变，就自动播放音乐

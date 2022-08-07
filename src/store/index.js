@@ -13,14 +13,14 @@ export default createStore({
 
     },
       id: 1961729084,
-      ar:[{
-        name:"ycccc"
-      }]
+      name: "差一个时辰"
+
     }],
     playListIndex:0,//默认下标为0
     isbtnShow:true,//播放按钮的显示
     detailShow:false,//歌曲详情页的显示
     lyricList:{},//歌词
+    currentTime:0//当前时间
 },
   getters: {
   },
@@ -40,6 +40,10 @@ export default createStore({
     },
     updateLyricList:function(state,value){
       state.lyricList=value
+    },
+    updateCurrentTime:function (state,value){
+      console.log(state.currentTime)
+      state.currentTime=value
     }
   },
   actions: {
