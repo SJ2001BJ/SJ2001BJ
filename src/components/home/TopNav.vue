@@ -12,7 +12,7 @@
     </div>
 
     <div class="topRight">
-      <i class="bi bi-search"></i>
+      <i class="bi bi-search" @click="$router.push('/search')"></i>
     </div>
 
   </div>

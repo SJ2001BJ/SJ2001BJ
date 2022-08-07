@@ -37,7 +37,7 @@
       <i class="bi bi-music-note-list"></i>
     </div>
     <div class="footerContent">
-
+       <input type="range" class="range" min="0" :max="duration" v-model="currentTime" step="0.05">
     </div>
     <div class="footer">
       <i class="bi bi-repeat"></i>
@@ -64,7 +64,7 @@ export default {
     }
   },
   computed:{
-    ...mapState(["lyricList",'currentTime','playListIndex','playList']),
+    ...mapState(["lyricList",'currentTime','playListIndex','playList','duration']),
     lyric:function (){
       let arr;
       if(this.lyricList.lyric){
@@ -83,8 +83,8 @@ export default {
           return{min,sec,mill,lrc,time}
         })
         arr.forEach((item,i)=>{
-          if(i===arr.length-1){
-            item.pre=0
+          if(i===arr.length-1 || isNaN(arr[i+1].time)){
+            item.pre = 100000;
           }else{
             item.pre=arr[i+1].time
           }
@@ -97,8 +97,9 @@ export default {
   mounted(){
     //console.log(this.musicList);
     //console.log(this.lyricList.lyric);
+    this.addDuration()
   },
-  props:['musicList','isbtnShow','play'],
+  props:['musicList','isbtnShow','play','addDuration'],
   methods:{
     backHome:function(){
       this.isLyricShow=false
@@ -109,21 +110,32 @@ export default {
       if(index<0){
         index=this.playList.length-1
       }else if(index==this.playList.length){
-         index=0
+         index=0;
       }
       this.updatePlayListIndex(index)
     },
     ...mapMutations(['updateDetailShow','updatePlayListIndex'])
   },
   watch:{
-    currentTime:function(){
+    currentTime:function(newValue){
       let p=document.querySelector("p.active")
-      console.log([p]);
-      if(p.offsetTop>300){
-         this.$refs.musicLyric.scollTop=p.offsetTop-300;
+      //console.log([p]);
+      if(p){
+        if(p.offsetTop>300){
+          this.$refs.musicLyric.scollTop=p.offsetTop-300;
+        }
       }
-      console.log([this.$refs.musicLyric])
-    }
+      if(newValue===this.duration){
+        if(this.playListIndex===this.playList.length-1){
+          this.updatePlayListIndex(0);
+          this.play()
+        }else{
+          this.updatePlayListIndex(this.playListIndex+1);
+        }
+      }
+
+      //console.log([this.$refs.musicLyric])
+    },
   },
   components:{
     Vue3Marquee
