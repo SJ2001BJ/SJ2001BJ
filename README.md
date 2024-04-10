@@ -1,8 +1,8 @@
-- 👋 Hi, I’m Jun Shi (Chineses: 史俊)
-- 👀 I’m interested in Web development, Front-end development,Ruby on rails development
-- 🌱 I’m currently learning ...
+- 👋 Hi, I’m Jun Shi , or you can call me Murphy.
+- 👀 I’m interested in Web development, Ruby on rails development，System Security, Machine learning, XAI, People-centred research project.
+- 🌱 I’m currently learning Cyber Security.
 - 💞️ I’m looking to collaborate on ...
-- 📫 How to reach me ...
+- 📫 pleach reach me at shijunmurphy@gmail.com
 
 <!---
 SJ2001BJ/SJ2001BJ is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
