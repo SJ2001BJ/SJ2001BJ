@@ -1,6 +1,6 @@
-- 👋 Hi, I’m Jun Shi , or you can call me Murphy.
-- 👀 I’m interested in Web development, Ruby on rails development，System Security, Machine learning, XAI, People-centred research project.
-- 🌱 I’m currently learning Cyber Security.
+- 👋 Hi, I’m Jun Shi(Chinese: 史俊) , or you can call me Murphy.
+- 👀 I’m interested in People-centred research project， AI(XAI, ML, DL), Android Eco Security, Malware detection using AI methods.
+- 🌱 I’m currently learning Cyber Security， PCI PTS Standard, Android Eco Security, Static Analysis.
 - 💞️ I’m looking to collaborate on ...
 - 📫 pleach reach me at shijunmurphy@gmail.com
 
